@@ -20,3 +20,8 @@ pip install -r requirements.txt
 
 - v1.0.0 – Initial Flask CRUD application
 - v1.1.0 – UI redesign using Bootstrap
+
+## Git Workflow
+- Feature branches
+- Dev integration branch
+- Main production branch
