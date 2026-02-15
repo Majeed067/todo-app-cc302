@@ -1,4 +1,10 @@
 [
-  "cook",
-  "save money"
+  {
+    "title": "Finish assignment",
+    "description": "Git + Docker project",
+    "priority": "high",
+    "due_date": "2026-02-20",
+    "status": "todo",
+    "created_at": "2026-02-15T10:00:00"
+  }
 ]
