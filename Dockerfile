@@ -10,3 +10,5 @@ COPY . .
 EXPOSE 5000
 
 CMD ["python", "app.py"]
+
+LABEL version="1.2.0"
