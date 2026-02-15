@@ -1,4 +1,10 @@
 [
-  "cook",
-  "save money"
+  {
+    "title": "Prepare cloud assignment",
+    "description": "Branching + Docker versioning",
+    "priority": "high",
+    "due_date": "2026-02-18",
+    "status": "todo",
+    "created_at": "2026-02-15T09:30:00"
+  }
 ]
