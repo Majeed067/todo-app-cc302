@@ -1,82 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Task Manager</title>
-
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>ToDo App</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        .done { text-decoration: line-through; color: gray; }
+        .task { margin-bottom: 10px; }
+    </style>
 </head>
+<body>
 
-<body class="bg-body-secondary">
+<h1>ToDo App</h1>
 
-<!-- Header -->
-<nav class="navbar navbar-dark bg-primary">
-    <div class="container">
-        <span class="navbar-brand mb-0 h1">📋 Task Manager</span>
-    </div>
-</nav>
+<!-- SEARCH + FILTER + SORT -->
+<form method="get">
+    <input name="q" placeholder="Search tasks">
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <select name="priority">
+        <option value="">All priorities</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+    </select>
 
-            <!-- Add Task Card -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <form action="/add" method="POST" class="input-group">
-                        <input type="text" name="todo" class="form-control" placeholder="What needs to be done?" required>
-                        <button class="btn btn-success">Add Task</button>
-                    </form>
-                </div>
-            </div>
+    <select name="status">
+        <option value="">All status</option>
+        <option value="todo">Todo</option>
+        <option value="done">Done</option>
+    </select>
 
-            <!-- Task List -->
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="mb-3">Your Tasks</h5>
+    <select name="sort">
+        <option value="">No sorting</option>
+        <option value="due_date">Due date</option>
+        <option value="priority">Priority</option>
+    </select>
 
-                    {% if todos %}
-                    <ul class="list-group list-group-flush">
-                        {% for todo in todos %}
-                        <li class="list-group-item">
+    <button type="submit">Apply</button>
+</form>
 
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="fw-bold me-2">{{ loop.index }}.</span>
-                                    {{ todo }}
-                                </div>
+<hr>
 
-                                <div class="d-flex gap-2">
-                                    <!-- Update -->
-                                    <form action="/update/{{ loop.index0 }}" method="POST" class="d-flex gap-1">
-                                        <input type="text" name="todo"
-                                               class="form-control form-control-sm"
-                                               placeholder="Edit" required>
-                                        <button class="btn btn-outline-warning btn-sm">Save</button>
-                                    </form>
+<!-- ADD TASK -->
+<form method="post" action="/add">
+    <input name="title" placeholder="Task title" required>
+    <input name="description" placeholder="Description">
+    <input type="date" name="due_date">
 
-                                    <!-- Delete -->
-                                    <a href="/delete/{{ loop.index0 }}"
-                                       class="btn btn-outline-danger btn-sm">
-                                        Delete
-                                    </a>
-                                </div>
-                            </div>
+    <select name="priority">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+    </select>
 
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                        <p class="text-muted text-center mb-0">No tasks yet</p>
-                    {% endif %}
+    <button>Add Task</button>
+</form>
 
-                </div>
-            </div>
+<hr>
 
-        </div>
-    </div>
+<!-- TASK LIST -->
+{% for todo in todos %}
+<div class="task">
+    <strong class="{{ 'done' if todo.status == 'done' else '' }}">
+        {{ todo.title }}
+    </strong>
+
+    <div>Description: {{ todo.description }}</div>
+    <div>Priority: {{ todo.priority }}</div>
+    <div>Due date: {{ todo.due_date or 'N/A' }}</div>
+    <div>Status: {{ todo.status }}</div>
+
+    <a href="/toggle/{{ loop.index0 }}">Toggle</a> |
+    <a href="/delete/{{ loop.index0 }}">Delete</a>
 </div>
+<hr>
+{% endfor %}
 
 </body>
 </html>
