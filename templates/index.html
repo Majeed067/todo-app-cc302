@@ -1,58 +1,77 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Focus ToDo</title>
-    <style>
-        body { font-family: Arial; margin: 40px; }
-        .done { text-decoration: line-through; color: gray; }
-        .task { padding: 10px; border-bottom: 1px solid #ccc; }
-        .badge { font-weight: bold; }
-    </style>
-</head>
-<body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FocusList</title>
 
-<h1>🎯 Focus ToDo App</h1>
+    <!-- CSS link -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
 
-<!-- DAILY FOCUS MODE -->
-<a href="/?focus=today">📅 Daily Focus</a> |
-<a href="/">📋 All Tasks</a>
+  <body>
+    <div class="container">
+      <h1>FocusList</h1>
+      <p class="subtitle">
+        A calm, focused way to manage what actually matters
+      </p>
 
-<hr>
+      <!-- Add Task -->
+      <form action="/add" method="POST" class="add-form">
+        <input type="text" name="title" placeholder="Task title" required />
 
-<!-- ADD TASK -->
-<form method="post" action="/add">
-    <input name="title" placeholder="Task title" required>
-    <input name="description" placeholder="Why is this important?">
-    <input type="date" name="due_date">
+        <textarea
+          name="description"
+          placeholder="Short note (optional)"
+        ></textarea>
 
-    <select name="priority">
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-    </select>
+        <select name="priority">
+          <option value="low">Low priority</option>
+          <option value="medium" selected>Medium priority</option>
+          <option value="high">High priority</option>
+        </select>
 
-    <button>Add</button>
-</form>
+        <input type="date" name="due_date" />
 
-<hr>
+        <button type="submit">Add task</button>
+      </form>
 
-<!-- TASK LIST -->
-{% for todo in todos %}
-<div class="task">
-    <strong class="{{ 'done' if todo.status == 'done' else '' }}">
-        {{ todo.title }}
-    </strong>
+      <!-- Task List -->
+      {% if todos %}
+        {% for todo in todos %}
+          <div class="task">
+            <div class="task-left">
+              <div class="task-title">{{ todo.title }}</div>
 
-    <div>{{ todo.description }}</div>
-    <div>Priority: {{ todo.priority }}</div>
-    <div>Due: {{ todo.due_date or 'No deadline' }}</div>
-    <div class="badge">Urgency: {{ todo.urgency }}</div>
+              {% if todo.description %}
+                <div class="task-desc">{{ todo.description }}</div>
+              {% endif %}
 
-    <a href="/toggle/{{ loop.index0 }}">Toggle</a> |
-    <a href="/snooze/{{ loop.index0 }}">Snooze 1 day</a> |
-    <a href="/delete/{{ loop.index0 }}">Delete</a>
-</div>
-{% endfor %}
+              <div class="meta">
+                <span class="pill {{ todo.priority }}">
+                  {{ todo.priority }}
+                </span>
 
-</body>
+                {% if todo.due_date %}
+                  <span class="pill due">
+                    Due {{ todo.due_date }}
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="task-actions">
+              <a href="/delete/{{ loop.index0 }}">Delete</a>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty">
+          No tasks yet — enjoy the quiet ✨
+        </div>
+      {% endif %}
+    </div>
+  </body>
 </html>

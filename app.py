@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
-import json, os
+import json
 from datetime import datetime, timedelta
+import os
+
+
 
 app = Flask(__name__)
 FILE = "todos.json"
