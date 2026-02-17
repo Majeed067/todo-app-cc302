@@ -1,77 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>FocusList</title>
+<head>
+  <meta charset="UTF-8">
+  <title>FocusList</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
 
-    <!-- CSS link -->
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
-  </head>
+  <div class="container">
+    <h1>FocusList</h1>
+    <p class="subtitle">A calm, focused way to manage what actually matters</p>
 
-  <body>
-    <div class="container">
-      <h1>FocusList</h1>
-      <p class="subtitle">
-        A calm, focused way to manage what actually matters
-      </p>
+    <form class="add-form" action="/add" method="POST">
+      <input
+        type="text"
+        name="title"
+        placeholder="Task title"
+        required
+      >
 
-      <!-- Add Task -->
-      <form action="/add" method="POST" class="add-form">
-        <input type="text" name="title" placeholder="Task title" required />
+      <textarea
+        name="description"
+        placeholder="Short note (optional)"
+      ></textarea>
 
-        <textarea
-          name="description"
-          placeholder="Short note (optional)"
-        ></textarea>
+      <select name="priority">
+        <option value="low">Low priority</option>
+        <option value="medium" selected>Medium priority</option>
+        <option value="high">High priority</option>
+      </select>
 
-        <select name="priority">
-          <option value="low">Low priority</option>
-          <option value="medium" selected>Medium priority</option>
-          <option value="high">High priority</option>
-        </select>
+      <input
+        type="date"
+        name="due_date"
+      >
 
-        <input type="date" name="due_date" />
+      <button type="submit">Add task</button>
+    </form>
 
-        <button type="submit">Add task</button>
-      </form>
-
-      <!-- Task List -->
-      {% if todos %}
+    {% if todos %}
+      <ul class="task-list">
         {% for todo in todos %}
-          <div class="task">
-            <div class="task-left">
-              <div class="task-title">{{ todo.title }}</div>
-
-              {% if todo.description %}
-                <div class="task-desc">{{ todo.description }}</div>
-              {% endif %}
-
-              <div class="meta">
-                <span class="pill {{ todo.priority }}">
-                  {{ todo.priority }}
-                </span>
-
-                {% if todo.due_date %}
-                  <span class="pill due">
-                    Due {{ todo.due_date }}
-                  </span>
-                {% endif %}
-              </div>
-            </div>
-
-            <div class="task-actions">
-              <a href="/delete/{{ loop.index0 }}">Delete</a>
-            </div>
-          </div>
+          <li class="task-item">
+            <strong>{{ todo.title }}</strong>
+            <span class="pill {{ todo.priority }}">{{ todo.priority }}</span>
+          </li>
         {% endfor %}
-      {% else %}
-        <div class="empty">
-          No tasks yet — enjoy the quiet ✨
-        </div>
-      {% endif %}
-    </div>
-  </body>
+      </ul>
+    {% else %}
+      <p class="empty">No tasks yet — enjoy the quiet ✨</p>
+    {% endif %}
+  </div>
+
+</body>
 </html>
