@@ -1,44 +1,57 @@
-from flask import Flask
+import os
+import json
+from flask import Flask, render_template, request, redirect, url_for
+
 
 app = Flask(__name__)
-FILE = "todos.json"
 
-def load_todos():
-    if not os.path.exists(FILE):
+DATA_FILE = "tasks.json"
+
+
+def load_tasks():
+    if not os.path.exists(DATA_FILE):
         return []
-    with open(FILE, "r") as f:
+
+    with open(DATA_FILE, "r") as f:
         return json.load(f)
 
-def save_todos(todos):
-    with open(FILE, "w") as f:
-        json.dump(todos, f, indent=2)
+
+def save_tasks(tasks):
+    with open(DATA_FILE, "w") as f:
+        json.dump(tasks, f)
+
 
 @app.route("/")
 def index():
-    todos = load_todos()
-    return render_template("index.html", todos=todos)
+    tasks = load_tasks()
+    return render_template("index.html", tasks=tasks)
+
 
 @app.route("/add", methods=["POST"])
-def add():
-    todo = request.form.get("todo")
-    todos = load_todos()
-    todos.append(todo)
-    save_todos(todos)
+def add_task():
+    tasks = load_tasks()
+
+    task = {
+        "title": request.form["title"],
+        "priority": request.form["priority"]
+    }
+
+    tasks.append(task)
+    save_tasks(tasks)
+
     return redirect(url_for("index"))
+
 
 @app.route("/delete/<int:index>")
-def delete(index):
-    todos = load_todos()
-    todos.pop(index)
-    save_todos(todos)
+def delete_task(index):
+    tasks = load_tasks()
+
+    if index < len(tasks):
+        tasks.pop(index)
+        save_tasks(tasks)
+
     return redirect(url_for("index"))
 
-@app.route("/update/<int:index>", methods=["POST"])
-def update(index):
-    todos = load_todos()
-    todos[index] = request.form.get("todo")
-    save_todos(todos)
-    return redirect(url_for("index"))
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(debug=True)
