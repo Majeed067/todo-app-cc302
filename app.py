@@ -1,21 +1,14 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///todo.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
 db = SQLAlchemy(app)
 
-# ------------------------
-# Database Model
-# ------------------------
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
-
-    def __repr__(self):
-        return f"<Task {self.title}>"
 
 # ------------------------
 # Routes
@@ -23,7 +16,6 @@ class Todo(db.Model):
 @app.route("/")
 def index():
     tasks = Todo.query.all()
-    # simple HTML list without template file
     task_list = "<ul>" + "".join([f"<li>{t.title}</li>" for t in tasks]) + "</ul>"
     return f"<h1>My ToDo List</h1>{task_list}"
 
@@ -51,7 +43,9 @@ def delete(id):
     db.session.commit()
     return redirect("/")
 
-# create tables if they don't exist (works for tests and app)
+# ------------------------
+# Ensure tables exist for tests
+# ------------------------
 with app.app_context():
     db.create_all()
 
