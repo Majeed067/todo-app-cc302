@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect
+from flask import Flask, render_template_string, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -8,46 +8,45 @@ db = SQLAlchemy(app)
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
 
-# ------------------------
-# Routes
-# ------------------------
-@app.route("/")
+HTML_PAGE = """
+<!doctype html>
+<title>Todo App</title>
+<h1>Todo List</h1>
+<form action="/add" method="post">
+  <input type="text" name="title">
+  <input type="submit" value="Add">
+</form>
+<ul>
+{% for task in tasks %}
+  <li>{{ task.title }} <a href="/delete/{{ task.id }}">Delete</a></li>
+{% endfor %}
+</ul>
+"""
+
+@app.route("/", methods=["GET"])
 def index():
     tasks = Todo.query.all()
-    task_list = "<ul>" + "".join([f"<li>{t.title}</li>" for t in tasks]) + "</ul>"
-    return f"<h1>My ToDo List</h1>{task_list}"
+    return render_template_string(HTML_PAGE, tasks=tasks)
 
 @app.route("/add", methods=["POST"])
 def add():
-    title = request.form.get("title")
-    if not title:
-        return "Bad Request", 400
-    new_task = Todo(title=title)
-    db.session.add(new_task)
+    title = request.form["title"]
+    task = Todo(title=title)
+    db.session.add(task)
     db.session.commit()
     return redirect("/")
 
-@app.route("/update/<int:id>", methods=["POST"])
-def update(id):
-    task = Todo.query.get_or_404(id)
-    task.title = request.form.get("title")
-    db.session.commit()
-    return redirect("/")
-
-@app.route("/delete/<int:id>")
+@app.route("/delete/<int:id>", methods=["GET"])
 def delete(id):
-    task = Todo.query.get_or_404(id)
+    task = Todo.query.get(id)
     db.session.delete(task)
     db.session.commit()
     return redirect("/")
 
-# ------------------------
-# Ensure tables exist for tests
-# ------------------------
-with app.app_context():
-    db.create_all()
-
+# Only create the database when running app directly
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
