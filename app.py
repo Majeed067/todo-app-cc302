@@ -41,6 +41,10 @@ def index():
     if q:
         tasks = Todo.query.filter(Todo.title.contains(q)).all()
     else:
+        priority = request.args.get("priority")
+    if priority:
+        tasks = Todo.query.filter_by(priority=priority).all()
+    else:
         tasks = Todo.query.all()
     return render_template_string(HTML, tasks=tasks)
 
